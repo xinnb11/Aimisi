@@ -1,0 +1,44 @@
+{
+  "name": "爱弥斯 · BERT-VITS 2 极速量化语音包",
+  "character": "爱弥斯 (Aemeath)",
+  "version": "2.0.0-int8",
+  "author": "Aemeath Terminal Architecture Team",
+  "license": "AGPL-3.0",
+  "engine": "sherpa-onnx",
+  "architecture": "Bert-VITS2",
+  "quantization": "int8_dynamic",
+  "sample_rate": 22050,
+  "channels": 1,
+  "bit_depth": 16,
+  "models": {
+    "acoustic_model": "model.int8.onnx",
+    "bert_model": "bert.int8.onnx",
+    "tokens_file": "tokens.txt",
+    "lexicon_file": "lexicon.txt"
+  },
+  "acoustic_config": {
+    "noise_scale": 0.667,
+    "noise_scale_w": 0.8,
+    "length_scale": 1.0,
+    "sid": 0
+  },
+  "supported_emotions": [
+    "平静",
+    "开心",
+    "温柔",
+    "调侃"
+  ],
+  "emotion_vector_dim": 256,
+  "emotions": {
+    "平静": "emotions/平静.bin",
+    "开心": "emotions/开心.bin",
+    "温柔": "emotions/温柔.bin",
+    "调侃": "emotions/调侃.bin"
+  },
+  "acoustic_profile": {
+    "base_pitch_hz": 295.0,
+    "formant_shift": 1.05,
+    "speech_rate": 1.0,
+    "energy_scale": 0.95
+  }
+}

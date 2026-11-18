@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------------
+# 爱弥斯 (Aemeath) AutoDL 云端预处理 / 打标 / 导出 / 量化 依赖清单
+#
+# 安装（AutoDL 32GB 显存实例，Python 3.10+）：
+#     pip install -r scripts/requirements-autodl.txt
+#
+# 说明：
+#   * 量化与 ONNX 校验（任务一 B）只需要 onnx / onnxruntime / onnxconverter-common。
+#   * 打标（任务一 A）需要 funasr + modelscope，首次运行会自动从魔搭下载模型。
+#   * 情绪向量提取若要走 CNHubert 真特征，需要 torch + transformers；
+#     缺失时脚本会自动降级为谱域嵌入，不会中断流水线。
+#   * AutoDL 若使用 GPU 版 onnxruntime，请把 onnxruntime 换成 onnxruntime-gpu
+#     （版本需与本机 CUDA 匹配），量化本身仍走 CPU，不影响产物。
+# ---------------------------------------------------------------------------
+
+# ---- 基础数值与音频 IO ----
+numpy>=1.24,<3
+scipy>=1.10            # 重采样 / 高通滤波（可选，缺失时脚本自动降级）
+soundfile>=0.12        # wav 读写（可选，缺失时回退标准库 wave）
+soxr>=0.3              # 高质量重采样（可选）
+
+# ---- 任务一 A：FunASR 自动打标 ----
+funasr>=1.1.0          # 达摩院语音识别、VAD、标点恢复
+modelscope>=1.14       # 魔搭社区模型下载与缓存
+pypinyin>=0.51         # 专有名词同音字纠错（可选，缺失时用显式变体词典）
+tqdm>=4.66             # 进度条（可选）
+
+# ---- 任务一 B：ONNX 导出 / 量化 / 校验 ----
+onnx>=1.15
+onnxruntime>=1.17      # GPU 实例可替换为 onnxruntime-gpu
+onnxconverter-common>=1.14
+protobuf>=4.25
+
+# ---- 情绪特征提取（CNHubert / Wav2Vec2，可选但强烈建议）----
+# torch 与 torchaudio 请按 AutoDL 镜像的 CUDA 版本单独安装，例如：
+#     pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
+transformers>=4.38
+torch>=2.1
+torchaudio>=2.1

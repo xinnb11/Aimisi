@@ -1,0 +1,34 @@
+{
+  "id": "aemeath-indextts-ultra",
+  "tier": "Ultra 殿堂情绪",
+  "name": "爱弥斯 · 八维情绪解耦版",
+  "character": "爱弥斯 (Aemeath)",
+  "version": "2.0.0-ultra-onnx",
+  "author": "Aemeath Terminal Architecture Team",
+  "engine": "onnxruntime",
+  "architecture": "IndexTTS2",
+  "quantization": "hybrid_int8_fp16",
+  "sample_rate": 48000,
+  "channels": 1,
+  "latency": "48ms",
+  "size": "450.0 MB",
+  "repo": "aemeath/indextts2-aemeath-ultra-onnx",
+  "models": {
+    "emotion_encoder": "emotion_encoder.onnx",
+    "acoustic_backbone": "acoustic.int8.onnx",
+    "hifigan_vocoder": "vocoder.fp16.onnx"
+  },
+  "supported_emotions": [
+    "平静",
+    "开心",
+    "温柔",
+    "调侃"
+  ],
+  "emotion_vector_dim": 768,
+  "emotions": {
+    "平静": "emotions/平静.bin",
+    "开心": "emotions/开心.bin",
+    "温柔": "emotions/温柔.bin",
+    "调侃": "emotions/调侃.bin"
+  }
+}

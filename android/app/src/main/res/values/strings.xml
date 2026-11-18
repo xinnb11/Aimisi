@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">爱弥斯终端</string>
+    <string name="title_activity_main">爱弥斯终端</string>
+    <string name="package_name">com.aemeath.terminal</string>
+    <string name="custom_url_scheme">com.aemeath.terminal</string>
+</resources>
