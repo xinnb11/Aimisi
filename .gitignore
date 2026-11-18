@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production / Build outputs
+dist/
+build/
+bin/
+out/
+android/app/build/
+android/.gradle/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Binaries & Packages
+*.apk
+*.aar
+*.aab
+*.dex
+*.class
+
+# Test audio recordings & temporary probe files
+*.wav
+_asr*.txt
+test_*.wav
+slice_*.wav
+out_vits_*.wav
+_desk_echo_test.wav
+
+# Local environment & secret tokens
+.env
+.env.local
+local.properties
+MS_TOKEN*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+
+# Large local archives & duplicated image copies
+android/app/libs/*.bak
+assets/17945*
+1794568840819.png
+1794568844420.png

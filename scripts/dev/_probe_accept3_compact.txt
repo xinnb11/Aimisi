@@ -1,0 +1,23 @@
+(async () => {
+  const app = window.AppController;
+  const info = await app.tts.diagnose();
+  const inv = info.inventory || {};
+  const stream = document.getElementById('chat-stream-container');
+  const cards = ['aemeath-vits-lite', 'aemeath-sovits-pro', 'aemeath-indextts-ultra'].map((id) => {
+    const btn = document.getElementById(`btn-pull-preset-${id}`);
+    const installed = (app.state.voiceModels.find(m => m.id === id) || {}).installed;
+    return { id, installed: !!installed, btn: btn ? btn.textContent.trim() : null, locked: btn ? btn.className.includes('cursor-not-allowed') : null };
+  });
+  return JSON.stringify({
+    msgs: app.state.messages.length,
+    streamKids: stream ? stream.children.length : -1,
+    stageAction: (document.getElementById('stage-action-text')?.textContent || '').trim(),
+    stageSpeech: (document.getElementById('stage-speech-text')?.textContent || '').trim(),
+    engine: info.engine,
+    emotionsNative: info.emotions || inv.emotions || null,
+    availableEmotions: app.availableEmotions,
+    emotion: app.state.emotion,
+    persisted: localStorage.getItem('aemeath_emotion_v1'),
+    cards
+  });
+})()

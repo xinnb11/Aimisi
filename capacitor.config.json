@@ -1,0 +1,46 @@
+{
+  "appId": "com.aemeath.terminal",
+  "appName": "爱弥斯终端",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true,
+    "backgroundColor": "#FFFFFF",
+    "buildOptions": {
+      "releaseType": "AAB"
+    }
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": false
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#FFFFFF",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#FFFFFF"
+    },
+    "AemeathTtsPlugin": {
+      "modelsRoot": "models/aemeath",
+      "modelscopeBaseUrl": "https://modelscope.cn",
+      "downloadConcurrency": 3,
+      "downloadTimeoutSeconds": 60,
+      "intraOpThreads": 4,
+      "defaultSampling": {
+        "temperature": 0.85,
+        "topK": 15,
+        "topP": 0.9,
+        "repetitionPenalty": 1.35,
+        "stopToken": 1024
+      }
+    }
+  }
+}

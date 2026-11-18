@@ -1,0 +1,47 @@
+{
+  "name": "爱弥斯 · GPT-SoVITS 2 高还原量化语音包",
+  "character": "爱弥斯 (Aemeath)",
+  "version": "2.0.0-int8",
+  "author": "Aemeath Terminal Architecture Team",
+  "license": "AGPL-3.0",
+  "engine": "onnxruntime",
+  "architecture": "GPT-SoVITS-v2",
+  "quantization": "int8_dynamic",
+  "sample_rate": 32000,
+  "channels": 1,
+  "bit_depth": 16,
+  "models": {
+    "t2s_model": "t2s.int8.onnx",
+    "vits_model": "vits.int8.onnx",
+    "cnhubert_model": "cnhubert.int8.onnx",
+    "bert_model": "bert.int8.onnx"
+  },
+  "sampling_params": {
+    "temperature": 0.85,
+    "top_k": 25,
+    "top_p": 0.90,
+    "repetition_penalty": 1.35,
+    "max_semantic_length": 512,
+    "stop_token": 1024,
+    "greedy_fallback": false,
+    "sampling_method": "multinomial_nucleus"
+  },
+  "supported_emotions": [
+    "平静",
+    "开心",
+    "温柔",
+    "调侃"
+  ],
+  "emotion_vector_dim": 256,
+  "emotions": {
+    "平静": "emotions/平静.bin",
+    "开心": "emotions/开心.bin",
+    "温柔": "emotions/温柔.bin",
+    "调侃": "emotions/调侃.bin"
+  },
+  "acoustic_profile": {
+    "base_pitch_hz": 310.0,
+    "speed": 1.0,
+    "volume_scale": 1.0
+  }
+}

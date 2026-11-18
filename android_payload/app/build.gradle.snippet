@@ -1,0 +1,60 @@
+// ---------------------------------------------------------------------------
+// 爱弥斯 (Aemeath) Android 原生推理依赖片段
+//
+// 用法：把下面的 dependencies / android.packagingOptions / defaultConfig 片段
+// 合并进 `android/app/build.gradle`（Capacitor 6 生成的 Groovy 版构建脚本）。
+//
+// 说明：
+//  * onnxruntime-android 已内置 CPU / NNAPI / XNNPACK EP；
+//    官方包**不含** Vulkan EP，因此 backend='gpu' 会安全回退（见 AemeathOrtBackend）。
+//  * sherpa-onnx 官方未发布到 Maven Central，请从 release 页下载 AAR 放入 app/libs：
+//    https://github.com/k2-fsa/sherpa-onnx/releases  →  sherpa-onnx-vX.Y.Z.aar
+//  * 若使用 onnxruntime-mobile 精简包，请确认所用量化算子（DynamicQuantizeLinear /
+//    MatMulInteger）在裁剪白名单内，否则请使用完整的 onnxruntime-android。
+// ---------------------------------------------------------------------------
+
+android {
+    defaultConfig {
+        // Sherpa-ONNX / ORT 均为 64 位原生库；armeabi-v7a 用于存量中低端机
+        ndk {
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            // Capacitor 6 + AGP 8 默认压缩 .so，Sherpa/ORT 的动态加载需要解压到磁盘
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += ["META-INF/native-image/**", "META-INF/DEPENDENCIES"]
+        }
+    }
+
+    // Sherpa AAR 体积较大，避免 DEX/资源合并时 OOM
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+dependencies {
+    // ---- ONNX Runtime Mobile（GPT-SoVITS v2 / IndexTTS2 引擎）----
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.18.0")
+
+    // ---- Sherpa-ONNX（Bert-VITS2 / MeloTTS 轻量引擎，本地 AAR）----
+    implementation(files("libs/sherpa-onnx.aar"))
+
+    // ---- 魔搭模型分片下载 ----
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // ---- 推理协程（Capacitor 已间接依赖，显式声明版本避免冲突）----
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    // ---- Capacitor 核心（生成工程已包含，此处仅作版本提示，勿重复添加）----
+    // implementation project(':capacitor-android')
+}
+
+// 若出现 "2 files found with path 'lib/arm64-v8a/libonnxruntime.so'"，
+// 说明同时引入了 onnxruntime-android 与 sherpa 内置的 ORT，请只保留其一，
+// 或使用 pickFirst：
+// android.packagingOptions.jniLibs.pickFirsts += ["**/libonnxruntime.so"]

@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.1",
+  "name": "爱弥斯 · GPT-SoVITS v2Pro 端侧语音包（含 BERT int8）",
+  "character": "爱弥斯 (Aemeath)",
+  "version": "1.0.0",
+  "arch": "GPT-SoVITS v2Pro",
+  "arch_alias": "GPT-SoVITS v2",
+  "engine": "onnxruntime",
+  "license": "AGPL-3.0",
+  "sample_rate": 32000,
+  "channels": 1,
+  "vocab_size": 1025,
+  "eos_token": 1024,
+  "quantization": {
+    "onnx_main": "int8_dynamic (t2s_encoder / t2s_fsdec / t2s_sdec)",
+    "vocoder": "fp32 (vits.onnx)",
+    "bert": "int8_dynamic",
+    "note": "前端语义大胆压 Int8，后端声码器严守 FP32/FP16——桌面 A/B 实测 Int8 三图话质更好（无开头结巴）、F0 与谱质心无损，包体从 1.17 GB 降到 699.3 MB"
+  },
+  "sampling_params": {
+    "temperature": 0.85,
+    "top_k": 15,
+    "top_p": 0.9,
+    "repetition_penalty": 1.35,
+    "stop_token": 1024,
+    "sampling_method": "multinomial_nucleus",
+    "greedy_fallback": false
+  },
+  "conditioning": {
+    "root": "conditioning",
+    "manifest": "conditioning/conditioning.json",
+    "emotions": [
+      "平静",
+      "开心",
+      "温柔",
+      "调侃",
+      "愤怒生气"
+    ],
+    "g2p": {
+      "symbols": "g2p/symbols.json",
+      "char2phone": "g2p/char2phone.json",
+      "tone_table": "g2p/tone_table.json",
+      "lexicon": "g2p/lexicon.json"
+    },
+    "audio_embedding": "conditioning/audio_embedding.f32",
+    "lexicon_entries": 798,
+    "tone_variants": 1972
+  },
+  "bert": {
+    "model": "bert/model.int8.onnx",
+    "vocab": "bert/vocab.txt",
+    "tokenizer": "bert/tokenizer.json",
+    "feature_layer": "hidden_states[-3] (第21层)"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4301,
+      "sha256": "e4bdd0aa11bc90ee9e36cd8afd2c101aa5029b54c576bc268474dfca0925dc31"
+    },
+    {
+      "path": "bert/model.int8.onnx",
+      "bytes": 301050434,
+      "sha256": "49562f84a6b90f5ed6a8fe3c5b5aec2883b3bf79c747f6d32d21febb1b4ce414"
+    },
+    {
+      "path": "bert/tokenizer.json",
+      "bytes": 268961,
+      "sha256": "53ff61207898738bbdc000f38abebef01041c8d23b6270c11855fc692d0a3ad6"
+    },
+    {
+      "path": "bert/vocab.txt",
+      "bytes": 109540,
+      "sha256": "45bbac6b341c319adc98a532532882e91a9cefc0329aa57bac9ae761c27b291c"
+    },
+    {
+      "path": "conditioning/audio_embedding.f32",
+      "bytes": 2099200,
+      "sha256": "5577188e9cd21baab2b14cf74d6decd55a93e8403a50eb68449ec7e96d01b010"
+    },
+    {
+      "path": "conditioning/conditioning.json",
+      "bytes": 7358,
+      "sha256": "7a28b0863c4a9ff11863ecc53b49cf4c2709a1560bd0ceb4810a647b615e2e01"
+    },
+    {
+      "path": "conditioning/g2p/char2phone.json",
+      "bytes": 60058,
+      "sha256": "69b3e2d98559e3f92a632900113aed9ced16f1edfd9fdb0433a367f8e39a5122"
+    },
+    {
+      "path": "conditioning/g2p/lexicon.json",
+      "bytes": 21580,
+      "sha256": "31adfed98fa289cb7f6c5e0f51132f16c31efe9bbe68256d4f55124b695433c3"
+    },
+    {
+      "path": "conditioning/g2p/symbols.json",
+      "bytes": 6161,
+      "sha256": "6e75be660270f92e02a6b8c8c87d727bddb77c154442cea4488956143a1ca541"
+    },
+    {
+      "path": "conditioning/g2p/tone_table.json",
+      "bytes": 29694,
+      "sha256": "bff86a6e7e96f4609f123b552f8a83dbb6e4440ca5e15ad3eb9d392231190ef4"
+    },
+    {
+      "path": "conditioning/平静/ref_audio.f32",
+      "bytes": 663584,
+      "sha256": "14b922457675a38f7249d250306aa83dff13cafe671e78e80801eca9681c955c"
+    },
+    {
+      "path": "conditioning/平静/ref_bert.f32",
+      "bytes": 163840,
+      "sha256": "3911a57c26414c98c50e8e097c89122558d9ff74a0d780dfd77dd049dccfb8fb"
+    },
+    {
+      "path": "conditioning/平静/ref_seq.i64",
+      "bytes": 320,
+      "sha256": "1830ff9204f147e71fdff8cd3d407b94c73966f0e0d22af9e540cf446d6edfa5"
+    },
+    {
+      "path": "conditioning/平静/ssl_content.f32",
+      "bytes": 724992,
+      "sha256": "6b511eec1658579e4fbbbfea6387d9603f7391e385d112a21d90fa75fda0c0c3"
+    },
+    {
+      "path": "conditioning/开心/ref_audio.f32",
+      "bytes": 1149532,
+      "sha256": "aea8ff9235dc7aa0248162d6e7660c255e76ea0ed213071ee2c3b08dbe9d7824"
+    },
+    {
+      "path": "conditioning/开心/ref_bert.f32",
+      "bytes": 163840,
+      "sha256": "3911a57c26414c98c50e8e097c89122558d9ff74a0d780dfd77dd049dccfb8fb"
+    },
+    {
+      "path": "conditioning/开心/ref_seq.i64",
+      "bytes": 320,
+      "sha256": "1830ff9204f147e71fdff8cd3d407b94c73966f0e0d22af9e540cf446d6edfa5"
+    },
+    {
+      "path": "conditioning/开心/ssl_content.f32",
+      "bytes": 724992,
+      "sha256": "6b511eec1658579e4fbbbfea6387d9603f7391e385d112a21d90fa75fda0c0c3"
+    },
+    {
+      "path": "conditioning/愤怒生气/ref_audio.f32",
+      "bytes": 832000,
+      "sha256": "b4dd17818d3b8ffc9179f5978697c07abc2d9c7d9616554acdb8840f9db2211d"
+    },
+    {
+      "path": "conditioning/愤怒生气/ref_bert.f32",
+      "bytes": 163840,
+      "sha256": "3911a57c26414c98c50e8e097c89122558d9ff74a0d780dfd77dd049dccfb8fb"
+    },
+    {
+      "path": "conditioning/愤怒生气/ref_seq.i64",
+      "bytes": 320,
+      "sha256": "1830ff9204f147e71fdff8cd3d407b94c73966f0e0d22af9e540cf446d6edfa5"
+    },
+    {
+      "path": "conditioning/愤怒生气/ssl_content.f32",
+      "bytes": 724992,
+      "sha256": "6b511eec1658579e4fbbbfea6387d9603f7391e385d112a21d90fa75fda0c0c3"
+    },
+    {
+      "path": "conditioning/温柔/ref_audio.f32",
+      "bytes": 1024000,
+      "sha256": "8db09cc8a4a6cb305c04631de5b913067d877e0310da465ef61ba7b8deca2d84"
+    },
+    {
+      "path": "conditioning/温柔/ref_bert.f32",
+      "bytes": 163840,
+      "sha256": "3911a57c26414c98c50e8e097c89122558d9ff74a0d780dfd77dd049dccfb8fb"
+    },
+    {
+      "path": "conditioning/温柔/ref_seq.i64",
+      "bytes": 320,
+      "sha256": "1830ff9204f147e71fdff8cd3d407b94c73966f0e0d22af9e540cf446d6edfa5"
+    },
+    {
+      "path": "conditioning/温柔/ssl_content.f32",
+      "bytes": 724992,
+      "sha256": "6b511eec1658579e4fbbbfea6387d9603f7391e385d112a21d90fa75fda0c0c3"
+    },
+    {
+      "path": "conditioning/调侃/ref_audio.f32",
+      "bytes": 1149532,
+      "sha256": "aea8ff9235dc7aa0248162d6e7660c255e76ea0ed213071ee2c3b08dbe9d7824"
+    },
+    {
+      "path": "conditioning/调侃/ref_bert.f32",
+      "bytes": 163840,
+      "sha256": "3911a57c26414c98c50e8e097c89122558d9ff74a0d780dfd77dd049dccfb8fb"
+    },
+    {
+      "path": "conditioning/调侃/ref_seq.i64",
+      "bytes": 320,
+      "sha256": "1830ff9204f147e71fdff8cd3d407b94c73966f0e0d22af9e540cf446d6edfa5"
+    },
+    {
+      "path": "conditioning/调侃/ssl_content.f32",
+      "bytes": 724992,
+      "sha256": "6b511eec1658579e4fbbbfea6387d9603f7391e385d112a21d90fa75fda0c0c3"
+    },
+    {
+      "path": "t2s_encoder.onnx",
+      "bytes": 2901236,
+      "sha256": "851d4cbdcec10b74c5d0c2c061daa6becdd5fac74358af435ce159591cbac7ec"
+    },
+    {
+      "path": "t2s_fsdec.onnx",
+      "bytes": 78888211,
+      "sha256": "13a56664bfdced53a31df862cde428a41f3ca52169c5abecff5ec23a89f6e904"
+    },
+    {
+      "path": "t2s_sdec.onnx",
+      "bytes": 78977245,
+      "sha256": "357958b9e7d5aa9cb59f4cc50d15e71f916c27e99a135715eca99b6f6e112c31"
+    },
+    {
+      "path": "vits.onnx",
+      "bytes": 262825470,
+      "sha256": "bee0977a7830fcdeebb0a096bdca65a1dde682debb6bf083c05a74bdc3bb97d0"
+    }
+  ],
+  "total_bytes": 736513857,
+  "generated_at": "2026-11-17T21:33:07Z",
+  "notes": "v2.7：完整支持 4+1 情绪特征（平静/开心/温柔/调侃/愤怒生气），消除参考文本续写尾巴，真实声学特征注入。",
+  "total_files": 34
+}

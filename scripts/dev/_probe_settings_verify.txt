@@ -1,0 +1,22 @@
+(async () => {
+  const ac = window.AppController;
+  ac.onBottomTabChange(2);
+  await new Promise((r) => setTimeout(r, 900));
+  const btn = document.querySelector('button[onclick*="verifySelectedModel"]');
+  if (!btn) return 'NO BUTTON';
+  btn.click();
+  const t0 = Date.now();
+  const marks = [];
+  for (let i = 0; i < 14; i += 1) {
+    await new Promise((r) => setTimeout(r, 4000));
+    marks.push({ t: Math.round((Date.now() - t0) / 1000), n: ac.tts.queue.length, play: ac.tts.isPlaying });
+    if (ac.tts.queue.length === 0 && i > 3) break;
+  }
+  const box = document.getElementById('settings-model-status');
+  const panel = document.getElementById('model-verify-result');
+  return JSON.stringify({
+    marks,
+    status: String(box ? box.textContent : '').trim().slice(0, 140),
+    panel: String(panel ? panel.textContent : '').trim().slice(0, 220)
+  });
+})()

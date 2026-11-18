@@ -1,0 +1,41 @@
+{
+  "id": "aemeath-vits-lite",
+  "tier": "Lite 轻量极速",
+  "name": "爱弥斯 · 星炬极速版",
+  "character": "爱弥斯 (Aemeath)",
+  "version": "2.0.0-lite-int8",
+  "author": "Aemeath Terminal Architecture Team",
+  "engine": "sherpa-onnx",
+  "architecture": "Bert-VITS2",
+  "quantization": "int8_dynamic",
+  "sample_rate": 22050,
+  "channels": 1,
+  "latency": "18ms",
+  "size": "78.4 MB",
+  "repo": "aemeath/vits-aemeath-lite-onnx",
+  "models": {
+    "acoustic_model": "model.int8.onnx",
+    "bert_model": "bert.int8.onnx",
+    "tokens_file": "tokens.txt",
+    "lexicon_file": "lexicon.txt"
+  },
+  "acoustic_config": {
+    "noise_scale": 0.667,
+    "noise_scale_w": 0.8,
+    "length_scale": 1.0,
+    "sid": 0
+  },
+  "supported_emotions": [
+    "平静",
+    "开心",
+    "温柔",
+    "调侃"
+  ],
+  "emotion_vector_dim": 256,
+  "emotions": {
+    "平静": "emotions/平静.bin",
+    "开心": "emotions/开心.bin",
+    "温柔": "emotions/温柔.bin",
+    "调侃": "emotions/调侃.bin"
+  }
+}

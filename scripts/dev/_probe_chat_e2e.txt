@@ -1,0 +1,43 @@
+(async () => {
+  const ac = window.AppController;
+  const logs = [];
+  const origInfo = console.info;
+  const origWarn = console.warn;
+  const origErr = console.error;
+  const take = (x) => { try { return typeof x === 'string' ? x : JSON.stringify(x); } catch (e) { return ''; } };
+  console.info = (...a) => { logs.push('info| ' + a.map(take).join(' ')); origInfo.apply(console, a); };
+  console.warn = (...a) => { logs.push('warn| ' + a.map(take).join(' ')); origWarn.apply(console, a); };
+  console.error = (...a) => { logs.push('error| ' + a.map(take).join(' ')); origErr.apply(console, a); };
+
+  // 真实的 baseUrl / Key 写入（走的是用户输入框那条路径）
+  const urlInput = document.getElementById('input-base-url');
+  const keyInput = document.getElementById('input-api-key');
+  const modelInput = document.getElementById('input-model-name');
+  urlInput.value = 'http://127.0.0.1:8765/v1';
+  keyInput.value = 'sk-mock-local-e2e';
+  modelInput.value = 'deepseek-chat';
+  urlInput.dispatchEvent(new Event('input', { bubbles: true }));
+  keyInput.dispatchEvent(new Event('input', { bubbles: true }));
+  modelInput.dispatchEvent(new Event('input', { bubbles: true }));
+  ac.saveApiConfig();
+
+  ac.onBottomTabChange(0);
+  ac.isGenerating = false;
+  const input = document.getElementById('chat-input');
+  input.value = '测试一下语音对话链路';
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  const sendBtn = document.querySelector('button[onclick*="sendMessage"]');
+  sendBtn.click();
+
+  const t0 = Date.now();
+  const marks = [];
+  let bubbles = '';
+  for (let i = 0; i < 20; i += 1) {
+    await new Promise((r) => setTimeout(r, 4000));
+    const last = ac.state.messages[ac.state.messages.length - 1] || {};
+    bubbles = String(last.rawContent || '').slice(0, 40);
+    marks.push({ t: Math.round((Date.now() - t0) / 1000), n: ac.tts.queue.length, play: ac.tts.isPlaying, reply: bubbles });
+    if (ac.tts.queue.length === 0 && i > 4) break;
+  }
+  return JSON.stringify({ marks, logs: logs.filter((l) => /TTS|streamChat|大模型|合成/.test(l)).slice(-10) });
+})()

@@ -1,0 +1,40 @@
+(async () => {
+  const ac = window.AppController;
+  const logs = [];
+  const origInfo = console.info;
+  const origWarn = console.warn;
+  const take = (x) => { try { return typeof x === 'string' ? x : JSON.stringify(x); } catch (e) { return ''; } };
+  console.info = (...a) => { logs.push('info| ' + a.map(take).join(' ')); origInfo.apply(console, a); };
+  console.warn = (...a) => { logs.push('warn| ' + a.map(take).join(' ')); origWarn.apply(console, a); };
+
+  ac.onBottomTabChange(1);
+  await new Promise((r) => setTimeout(r, 600));
+
+  // ① UI 水晶叮音（真实点击看板娘不会走这里，直接调同一入口）
+  ac.prewarmChimeAudio();
+  await new Promise((r) => setTimeout(r, 300));
+  const ctxState = ac.chimeCtx ? ac.chimeCtx.state : 'no-ctx';
+  const hasBuffer = !!ac.__chimeBuffer;
+  let peak = 0;
+  if (ac.__chimeBuffer) {
+    const d = ac.__chimeBuffer.getChannelData(0);
+    for (let i = 0; i < d.length; i += 1) peak = Math.max(peak, Math.abs(d[i]));
+  }
+  ac.playMascotChime();
+  await new Promise((r) => setTimeout(r, 400));
+
+  // ② 语音页情绪胶囊：真实 DOM 点击
+  const t0 = Date.now();
+  document.getElementById('btn-emo-温柔').click();
+  const marks = [];
+  for (let i = 0; i < 16; i += 1) {
+    await new Promise((r) => setTimeout(r, 4000));
+    marks.push({ t: Math.round((Date.now() - t0) / 1000), n: ac.tts.queue.length, play: ac.tts.isPlaying });
+    if (ac.tts.queue.length === 0 && i > 3) break;
+  }
+  return JSON.stringify({
+    chime: { ctxState, hasBuffer, peak: Number(peak.toFixed(3)), wavUrl: !!ac.__chimeWavUrl, audioEl: !!ac.__chimeAudioEl },
+    marks,
+    synthLogs: logs.filter((l) => /TTS|chime/.test(l)).slice(-4)
+  });
+})()

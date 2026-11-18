@@ -1,0 +1,52 @@
+(async () => {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const ac = window.AppController;
+  const out = { samples: [] };
+
+  const measure = async (label, fn) => {
+    const deltas = [];
+    let last = performance.now();
+    let stop = false;
+    const tick = () => {
+      const now = performance.now();
+      deltas.push(now - last);
+      last = now;
+      if (!stop) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    await sleep(60);
+    const t0 = performance.now();
+    fn();
+    const jsMs = performance.now() - t0;
+    await sleep(700);
+    stop = true;
+    const sorted = deltas.slice(1).sort((a, b) => a - b);
+    const p = (q) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))] || 0;
+    out.samples.push({
+      label,
+      jsMs: Math.round(jsMs * 10) / 10,
+      frames: sorted.length,
+      median: Math.round(p(0.5) * 10) / 10,
+      p90: Math.round(p(0.9) * 10) / 10,
+      max: Math.round(sorted[sorted.length - 1] * 10) / 10,
+      janky: sorted.filter((d) => d > 32).length,
+    });
+    await sleep(200);
+  };
+
+  // 先进入终端
+  const portal = document.getElementById('btn-portal-launch');
+  if (portal && portal.offsetParent !== null) portal.click();
+  await sleep(3800);
+  const modal = document.getElementById('welcome-notice-modal');
+  if (modal) modal.classList.add('opacity-0', 'pointer-events-none', 'hidden');
+
+  await measure('chat->voice', () => ac.onBottomTabChange(1));
+  await measure('voice->settings', () => ac.onBottomTabChange(2));
+  await measure('settings->chat', () => ac.onBottomTabChange(0));
+  await measure('chat->voice#2', () => ac.onBottomTabChange(1));
+
+  const longTasks = (window.__longTasks || []).length;
+  out.longTasks = longTasks;
+  return 'OK ' + JSON.stringify(out);
+})()

@@ -1,0 +1,51 @@
+(async () => {
+  const out = {};
+  const app = window.AppController;
+  if (!app || !app.tts) return { ready: false, reason: 'AppController 未实例化（可能还在 Portal）' };
+
+  // 1) 首页文案
+  out.messagesLength = app.state.messages.length;
+  const stream = document.getElementById('chat-stream-container');
+  out.chatStreamChildren = stream ? stream.children.length : -1;
+  out.stageAction = (document.getElementById('stage-action-text')?.textContent || '').trim();
+  out.stageSpeech = (document.getElementById('stage-speech-text')?.textContent || '').trim();
+
+  // 2) 语调可用性（原生 diagnose 上报）
+  const info = await app.tts.diagnose();
+  out.diagnoseEngine = info.engine;
+  out.emotionsFromNative = info.emotions || (info.inventory && info.inventory.emotions) || null;
+  out.availableEmotions = app.availableEmotions.slice();
+  out.currentEmotion = app.state.emotion;
+  out.persistedEmotion = localStorage.getItem('aemeath_emotion_v1');
+
+  // 3) 语音包「未开放」
+  app.onBottomTabChange(1);
+  app.renderVoiceView();
+  out.presetCards = ['aemeath-vits-lite', 'aemeath-sovits-pro', 'aemeath-indextts-ultra'].map((id) => {
+    const btn = document.getElementById(`btn-pull-preset-${id}`);
+    return { id, found: !!btn, text: btn ? btn.textContent.trim() : null, locked: btn ? btn.className.includes('cursor-not-allowed') : null };
+  });
+
+  // 4) 合成一次，确认没改坏
+  let synth = null;
+  try {
+    const t0 = Date.now();
+    const res = await app.tts.getNativePlugin().synthesizeSpeech({ text: '首页已经很干净了。', emotion: '温柔', playImmediately: true });
+    synth = { ms: Date.now() - t0, success: res.success, durationMs: res.durationMs, queued: res.queued, played: res.played };
+  } catch (e) {
+    synth = { error: String((e && e.message) || e).slice(0, 160) };
+  }
+  out.synth = synth;
+
+  // 5) 不可用情绪拦截（模拟只剩「温柔」）
+  app.applyEmotionAvailability(['温柔']);
+  app.onEmotionChange(0); // 平静不可用
+  out.afterBlockedEmotion = app.state.emotion;
+  out.blockedPills = ['平静', '开心', '温柔', '调侃'].map((e) => {
+    const b = document.getElementById(`btn-emo-${e}`);
+    return { e, hidden: b ? b.classList.contains('hidden') : null };
+  });
+  // 恢复真实可用列表
+  if (Array.isArray(out.emotionsFromNative)) app.applyEmotionAvailability(out.emotionsFromNative);
+  return out;
+})()

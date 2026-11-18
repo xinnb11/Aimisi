@@ -1,0 +1,64 @@
+(async () => {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const out = { steps: [] };
+  try {
+    // 1) 等 AppController 实例化（portal 之前是 class）
+    for (let i = 0; i < 40; i++) {
+      if (window.AppController && typeof window.AppController.tts === 'object') break;
+      await sleep(250);
+    }
+    out.hasInstance = !!(window.AppController && window.AppController.tts);
+
+    // 2) 走进终端
+    const portalBtn = document.getElementById('btn-portal-launch');
+    if (portalBtn && portalBtn.offsetParent !== null) portalBtn.click();
+    await sleep(3500);
+    const welcome = document.getElementById('welcome-notice-modal');
+    if (welcome) welcome.classList.add('opacity-0', 'pointer-events-none', 'hidden');
+    out.afterPortal = !!document.getElementById('chat-input');
+
+    // 3) 确保已挂载（冷启动自动挂载可能还在跑）
+    for (let i = 0; i < 20; i++) {
+      const d = await window.AppController.tts.diagnose();
+      out.diag = { engine: d.engine, accel: d.accelerationActive, notes: d.mountNotes };
+      if (d.engine && !String(d.engine).includes('未装载')) break;
+      if (i === 0) {
+        const model = window.AppController.state.voiceModels.find((m) => m.id === 'aemeath-sovits-pro');
+        await window.AppController.tts.mountModel(model, 'cpu');
+      }
+      await sleep(500);
+    }
+
+    const text = '今天的任务就做到这里吧，我在地图右侧发现了一个隐藏房间。';
+    const plugin = window.AppController.tts.getNativePlugin();
+
+    // 4) 实时播放路径：只测「合成 + 入队」耗时，不等播完
+    const t0 = Date.now();
+    const played = await plugin.synthesizeSpeech({ text, emotion: '温柔', playImmediately: true });
+    out.playPath = {
+      wallMs: Date.now() - t0,
+      success: played.success,
+      durationMs: played.durationMs,
+      samplesCount: played.samplesCount,
+      queued: played.queued,
+      played: played.played,
+      accel: played.accelerationActive,
+    };
+
+    // 5) 取 WAV：不等播放，拿 base64 落盘给 ASR
+    const t1 = Date.now();
+    const wav = await plugin.synthesizeSpeech({ text, emotion: '温柔', playImmediately: false });
+    out.wavPath = {
+      wallMs: Date.now() - t1,
+      durationMs: wav.durationMs,
+      samplesCount: wav.samplesCount,
+      base64Len: (wav.audioBase64 || '').length,
+    };
+    window.__wavB64 = wav.audioBase64;
+    out.storedB64Len = (wav.audioBase64 || '').length;
+    return 'OK ' + JSON.stringify(out);
+  } catch (error) {
+    out.error = String((error && error.message) || error);
+    return 'ERR ' + JSON.stringify(out);
+  }
+})()
